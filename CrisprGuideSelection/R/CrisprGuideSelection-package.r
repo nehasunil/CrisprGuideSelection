@@ -54,7 +54,7 @@ calcModuleWeightingForSampling <- function(go)
 {
   #order go in ascending order according to weights
   go=go[order(go[,2])]
-  if(size(go)>0)
+  if(nrow(go)>0)
   {
     weighting = rep(0,times=nrow(focusRegions))
     for(i in nrow(go))

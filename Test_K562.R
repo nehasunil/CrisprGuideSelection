@@ -10,4 +10,4 @@ weightsForGO=rep(1,times=length(GOOfInterest))
 GOInput=cbind(GOOfInterest,weightsForGO)
 
 focusRegions=setFocusRegions(focusRegions)
-selectedRegions=selectRegions(calcModuleWeightingForSampling(GOInput))
+selectedRegions=sampleRegions(calcModuleWeightingForSampling(GOInput))
