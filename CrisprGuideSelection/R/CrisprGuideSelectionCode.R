@@ -13,6 +13,7 @@ setFocusRegions <- function(focusTable)
 #and chooses the module with the highest percentage of its contents from the focus cell type. 
 #If the highest percentage is less than test_minFractionFocusInModule, the module is deemed
 #not cell-type specific and NA is returned
+selectModule <- function(moduleDirectory)
 {
   files <- list.files(path=moduleDirectory)
   
