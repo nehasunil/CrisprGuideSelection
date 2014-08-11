@@ -5,7 +5,7 @@ test_minFractionfocusRegionsInModule=0.9
 max_FractionModuleSpecific=0.7
 numRegions=9000
 
-GOOfInterest=c(GO:0040007, and all those under it?)
+GOOfInterest=c(GO:0040007)
 weightsForGO=rep(1,times=length(GOOfInterest))
 GOInput=cbind(GOOfInterest,weightsForGO)
 
