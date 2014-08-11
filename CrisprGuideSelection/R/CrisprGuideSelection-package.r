@@ -53,7 +53,7 @@ selectModule <- function(moduleDirectory)
 calcModuleWeightingForSampling <- function(go)
 {
   #order go in ascending order according to weights
-  go=go[order(go[,2])]
+  go=as.data.frame(go[order(go[,2]),])
   if(nrow(go)>0)
   {
     weighting = rep(0,times=nrow(focusRegions))
