@@ -62,7 +62,7 @@ calcModuleWeightingForSampling <- function(go)
       modules=go_table[which(as.character(go_table[,2])==go[i,1]),1]
       for(k in length(modules))
       {
-        clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed",sep=''))
+        clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed.gz",sep=''))
         clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
         intersection=which(focusRegions[,4]==clust_regions)
         weighting[intersection]=go[i,2]
