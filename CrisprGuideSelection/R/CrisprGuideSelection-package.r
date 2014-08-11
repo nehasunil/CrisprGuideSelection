@@ -93,7 +93,7 @@ sampleRegions <- function(weighted)
   
   focusRegionsWithWeighting=cbind(focusRegions,weighted)
   
-  ctSpecific=selectModule()
+  ctSpecific=selectModule(moduleDirectory)
   #for each module value, look for weighting value on focusRegions and append
   ctSpecific$Weighting=0
   for(i in 1:nrow(ctSpecific))
