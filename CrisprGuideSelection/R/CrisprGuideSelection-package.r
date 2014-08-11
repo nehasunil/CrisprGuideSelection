@@ -3,7 +3,7 @@
 setFocusRegions <- function(focusTable)
 {
   focusRegions=focusTable[,1:3]
-  focusRegions[,4]=paste(as.character(focusRegions[,1]),":",focusRegions[,2],"-",focusRegions[k,3],sep='')
+  focusRegions[,4]=paste(as.character(focusRegions[,1]),":",focusRegions[,2],"-",focusRegions[,3],sep='')
   return(focusRegions)
 }
 
