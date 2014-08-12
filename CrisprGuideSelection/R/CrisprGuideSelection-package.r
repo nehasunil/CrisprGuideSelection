@@ -96,16 +96,10 @@ sampleRegions <- function(weighted)
   ctSpecific=selectModule(moduleDirectory)
   ctSpecific=ctSpecific[,1:3]
   ctSpecific[,4]=paste(as.character(ctSpecific[,1]),":",ctSpecific[,2],"-",ctSpecific[,3],sep='')
-  #for each module value, look for weighting value on focusRegions and append
   ctSpecific$Weighting=0
-  for(i in 1:nrow(ctSpecific))
-  {
-    index=match(ctSpecific[i,4],focusRegionsWithWeighting[,4])
-    if(!is.na(index))
-    {
-      ctSpecific[i,ncol(ctSpecific)]=as.numeric(as.character((focusRegionsWithWeighting[index,ncol(focusRegionsWithWeighting)])))
-    }
-  }
+  rownames(focusRegionsWithWeighting)=focusRegionsWithWeighting[,4]
+  intersection=which(ctSpecific[,4] %in% focusRegionsWithWeighting[,4]) 
+  ctSpecific[intersection,5]=focusRegionsWithWeighting[ctSpecific[intersection,4],5]
   
   if (nrow(ctSpecific) < numCTSpecific)
   {
@@ -115,21 +109,19 @@ sampleRegions <- function(weighted)
     print(paste(numCTspecific,"cell type specific regions will be sampled"))
     print(paste(numNonSpecific,"nonspecific regions will be sampled"))
   }
+  
   specificSample=ctSpecific[sample(1:nrow(ctSpecific),numCTSpecific,prob=ctSpecific[,ncol(ctSpecific)]),]
+  
   rest=focusRegionsWithWeighting
-  for(i in 1:nrow(ctSpecific))
-  {
-    index=match(ctSpecific[i,4],rest[,4])
-    if(!is.na(index))
-    {
-      rest=rest[-index,]
-    }
-  }
+  intersections= which(focusRegionsWithWeighting[,4] %in% ctSpecific[,4])
+  rest=rest[-intersections]
+  
   if(sum(rest$weighted)==0)
   {
     print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
     return(specificSample[,1:4])
   }
+  
   nonSpecificSample=rest[sample(1:nrow(rest),size=numNonSpecific,prob=rest[,ncol(rest)]),]
   return (rbind(specificSample[,1:4],nonSpecificSample[,1:4]))
 }
