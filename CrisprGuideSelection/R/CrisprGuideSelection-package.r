@@ -50,17 +50,17 @@ selectModule <- function(modDir)
 #based on its gene ontology. For each gene ontology of interest, the method finds all modules with that gene ontology.
 #For each module, the method finds all the intersections with focusRegions and sets the weighting vector 
 #to the value assigned by the go parameter.
-calcModuleWeightingForSampling <- function(go)
+calcModuleWeightingForSampling <- function(go,go_table)
 {
   #order go in ascending order according to weights
   go=as.data.frame(go[order(go[,2]),])
   if(nrow(go)>0)
   {
     weighting = rep(0,times=nrow(focusRegions))
-    for(i in nrow(go))
+    for(i in 1:nrow(go))
     {
       modules=go_table[which(as.character(go_table[,2])==go[i,1]),1]
-      for(k in length(modules))
+      for(k in 1:length(modules))
       {
         clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed.gz",sep=''))
         clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
@@ -110,20 +110,23 @@ sampleRegions <- function(weighted)
     print(paste(numNonSpecific,"nonspecific regions will be sampled"))
   }
   
-  specificSample=ctSpecific[sample(1:nrow(ctSpecific),numCTSpecific,prob=ctSpecific[,ncol(ctSpecific)]),]
+  specificSample=ctSpecific[sample(1:nrow(ctSpecific),numCTSpecific),]
   
   rest=focusRegionsWithWeighting
   intersections= which(focusRegionsWithWeighting[,4] %in% ctSpecific[,4])
-  rest=rest[-intersections]
+  rest=rest[-intersections,]
   
-  if(sum(rest$weighted)==0)
+  if(sum(as.numeric(rest$weighted))==0)
   {
     print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
     return(specificSample[,1:4])
   }
   
   nonSpecificSample=rest[sample(1:nrow(rest),size=numNonSpecific,prob=rest[,ncol(rest)]),]
-  return (rbind(specificSample[,1:4],nonSpecificSample[,1:4]))
+  colnames(nonSpecificSample)=colnames(specificSample)
+  sampledRegions=rbind(specificSample[,1:4],nonSpecificSample[,1:4])
+  rownames(sampledRegions)=c(1:nrow(sampledRegions))
+  return (sampledRegions)
 }
 
 

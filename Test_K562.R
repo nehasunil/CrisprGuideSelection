@@ -11,3 +11,4 @@ GOInput=as.data.frame(cbind(GOOfInterest,weightsForGO))
 
 focusRegions=setFocusRegions(focusRegions)
 sampledRegions=sampleRegions(calcModuleWeightingForSampling(GOInput))
+
