@@ -119,13 +119,13 @@ sampleRegions <- function(weighted)
   rest=focusRegionsWithWeighting
   for(i in 1:nrow(ctSpecific))
   {
-    index=match(paste(ctSpecific[i,1],":",ctSpecific[i,2],"-",ctSpecific[i,3],sep=''),rest[,4])
+    index=match(ctSpecific[i,4],rest[,4])
     if(!is.na(index))
     {
       rest=rest[-index,]
     }
   }
-  if(colSums(rest[,5])==0)
+  if(sum(rest$weighted)==0)
   {
     print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
     return(specificSample[,1:4])
