@@ -5,10 +5,13 @@ test_minFractionFocusInModule=0.9
 max_FractionModuleSpecific=0.7
 numRegions=9000
 
-GOOfInterest=c("GO:0051569","GO:0040007","GO:0006417","GO:0008037")
-weightsForGO=rep(1,times=length(GOOfInterest))
+GOOfInterest=c("GO:0051569","GO:0040007","GO:0016071","GO:0019058","GO:0006413")
+#16,12,15,54,35
+weightsForGO=rep(100,100,20,50,40)
 GOInput=as.data.frame(cbind(GOOfInterest,weightsForGO))
 
 focusRegions=setFocusRegions(focusRegions)
 sampledRegions=sampleRegions(calcModuleWeightingForSampling(GOInput))
 
+#16,12
+#15,54,35
