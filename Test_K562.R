@@ -5,7 +5,7 @@ test_minFractionFocusInModule=0.9
 max_FractionModuleSpecific=0.7
 numRegions=9000
 
-GOOfInterest=c("GO:0040007")
+GOOfInterest=c("GO:0051569","GO:0040007",)
 weightsForGO=rep(1,times=length(GOOfInterest))
 GOInput=as.data.frame(cbind(GOOfInterest,weightsForGO))
 
