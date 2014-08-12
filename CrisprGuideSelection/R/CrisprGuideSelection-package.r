@@ -13,11 +13,11 @@ setFocusRegions <- function(focusTable)
 #and chooses the module with the highest percentage of its contents from the focus cell type. 
 #If the highest percentage is less than test_minFractionFocusInModule, the module is deemed
 #not cell-type specific and NA is returned
-selectModule <- function(moduleDirectory)
+selectModule <- function(modDir)
 {
-  files <- list.files(path=moduleDirectory)
+  files <- list.files(path=modDir)
   
-  clust=read.table(paste(moduleDirectory,files[1],sep=''))
+  clust=read.table(paste(modDir,files[1],sep=''))
   clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
   intersection=intersect(focusRegions[,4],clust_regions)
   count=length(intersection)
@@ -26,7 +26,7 @@ selectModule <- function(moduleDirectory)
   
   for(i in 2:length(files))
   {
-    clust=read.table(paste(moduleDirectory,files[i],sep=''))
+    clust=read.table(paste(modDir,files[i],sep=''))
     clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
     intersection=intersect(focusRegions[,4],clust_regions)
     count=length(intersection)
@@ -36,7 +36,7 @@ selectModule <- function(moduleDirectory)
   if (max(dist[,2])>test_minFractionFocusInModule)
   {
     maxInd=which.max(dist[,2])
-    module=read.table(paste(moduleDirectory,files[maxInd],sep=''))
+    module=read.table(paste(modDir,files[maxInd],sep=''))
     return(module)
   }
 }
