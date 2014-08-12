@@ -123,6 +123,11 @@ sampleRegions <- function(weighted)
       rest=rest[-index,]
     }
   }
+  if(colSums(rest[,5])==0)
+  {
+    print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
+    return(specificSample[,1:4])
+  }
   nonSpecificSample=rest[sample(1:nrow(rest),size=numNonSpecific,prob=rest[,ncol(rest)]),]
   return (rbind(specificSample[,1:4],nonSpecificSample[,1:4]))
 }
