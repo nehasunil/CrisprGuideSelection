@@ -64,14 +64,14 @@ calcModuleWeightingForSampling <- function(go,go_table)
     weighting = rep(0,times=nrow(focusRegions))
     for(i in 1:nrow(go))
     {
-      modules=go_table[which(as.character(go$weight)==go[i,geneOntology]),1]
+      modules=go_table[which(as.character(go$weight)==go[i,"geneOntology"]),1]
       for(k in 1:length(modules))
       {
         clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed.gz",sep=''))
         colnames(clust)[1:3]=c("chrom", "chromStart","chromEnd")
         clust_regions=paste(as.character(clust$chrom),":",clust$chromStart,"-",clust$chromEnd,sep='')
         intersection=which(focusRegions$region %in% clust_regions)
-        weighting[intersection]=go[i,weight]
+        weighting[intersection]=go[i,"weight"]
       }
     }
     return(weighting)
