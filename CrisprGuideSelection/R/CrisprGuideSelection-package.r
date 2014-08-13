@@ -126,7 +126,7 @@ sampleRegions <- function(weighted)
     return(specificSample[,c("chrom","chromStart","chromEnd","region")])
   }
   
-  sampledRegions=rbind(specificSample[,c("chrom","chromStart","chromEnd","region")]],nonSpecificSample[,c("chrom","chromStart","chromEnd","region")]])
+  sampledRegions=rbind(specificSample[,c("chrom","chromStart","chromEnd","region")],nonSpecificSample[,c("chrom","chromStart","chromEnd","region")])
   rownames(sampledRegions)=c(1:nrow(sampledRegions))
   colnames(sampledRegions)=c("chrom","chromStart","chromEnd","region")
   return (sampledRegions)
