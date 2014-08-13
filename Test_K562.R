@@ -9,11 +9,11 @@ GOOfInterest=c("GO:0040007","GO:0051649","GO:0008037","GO:0030163","GO:0000082",
   "GO:0071702","GO:0008380","GO:0019439","GO:0019221","GO:0010608",
   "GO:0019058","GO:0022402")
 #clusters: 12,4,10,15,17,23,31,35,38,42,47,54,62
-weightsForGO=rep(100,3,1,6,12,4,37,1,1,2,14,12)
+weightsForGO=rep(50,3,1,6,12,4,37,1,1,2,14,12)
 GOInput=as.data.frame(cbind(GOOfInterest,weightsForGO))
 
 focusRegions=setFocusRegions(focusRegions)
-sampledRegions=sampleRegions(calcModuleWeightingForSampling(GOInput))
+sampledRegions=sampleRegions(calcModuleWeightingForSampling(GOInput,go_table))
 
 #16,12
 #15,54,35
