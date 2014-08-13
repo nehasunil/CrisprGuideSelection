@@ -4,6 +4,7 @@ setFocusRegions <- function(focusTable)
 {
   focusRegions=focusTable[,1:3]
   focusRegions[,4]=paste(as.character(focusRegions[,1]),":",focusRegions[,2],"-",focusRegions[,3],sep='')
+  colnames(focusRegions)=c("chrom", "chromStart","chromEnd", "region")
   return(focusRegions)
 }
 
@@ -18,8 +19,9 @@ selectModule <- function(modDir)
   files <- list.files(path=modDir)
   
   clust=read.table(paste(modDir,files[1],sep=''))
-  clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
-  intersection=intersect(focusRegions[,4],clust_regions)
+  colnames(clust)[1:3]=c("chrom","chromStart","chromEnd")
+  clust_regions=paste(as.character(clust$chrom),":",clust$chromStart,"-",clust$chromEnd,sep='')
+  intersection=intersect(focusRegions$region,clust_regions)
   count=length(intersection)
   percentage=count/nrow(clust)
   dist=cbind(count,percentage)
@@ -27,15 +29,17 @@ selectModule <- function(modDir)
   for(i in 2:length(files))
   {
     clust=read.table(paste(modDir,files[i],sep=''))
-    clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
-    intersection=intersect(focusRegions[,4],clust_regions)
+    colnames(clust)[1:3]=c("chrom", "chromStart","chromEnd")
+    clust_regions=paste(as.character(clust$chrom),":",clust$chromStart,"-",clust$chromEnd,sep='')
+    intersection=intersect(focusRegions$region,clust_regions)
     count=length(intersection)
     percentage=count/nrow(clust)
     dist=rbind(dist,c(count,percentage))
   }
-  if (max(dist[,2])>test_minFractionFocusInModule)
+  dist=as.data.frame(dist)
+  if (max(dist$percentage)>test_minFractionFocusInModule)
   {
-    maxInd=which.max(dist[,2])
+    maxInd=which.max(dist$percentage)
     module=read.table(paste(modDir,files[maxInd],sep=''))
     return(module)
   }
@@ -53,19 +57,21 @@ selectModule <- function(modDir)
 calcModuleWeightingForSampling <- function(go,go_table)
 {
   #order go in ascending order according to weights
-  go=as.data.frame(go[order(go[,2]),])
+  colnames(go)=c(geneOntology,weight)
+  go=as.data.frame(go[order(go$weight),])
   if(nrow(go)>0)
   {
     weighting = rep(0,times=nrow(focusRegions))
     for(i in 1:nrow(go))
     {
-      modules=go_table[which(as.character(go_table[,2])==go[i,1]),1]
+      modules=go_table[which(as.character(go$weight)==go[i,geneOntology]),1]
       for(k in 1:length(modules))
       {
         clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed.gz",sep=''))
-        clust_regions=paste(as.character(clust[,1]),":",clust[,2],"-",clust[,3],sep='')
-        intersection=which(focusRegions[,4] %in% clust_regions)
-        weighting[intersection]=go[i,2]
+        colnames(clust)[1:3]=c("chrom", "chromStart","chromEnd")
+        clust_regions=paste(as.character(clust$chrom),":",clust$chromStart,"-",clust$chromEnd,sep='')
+        intersection=which(focusRegions$region %in% clust_regions)
+        weighting[intersection]=go[i,weight]
       }
     }
     return(weighting)
@@ -92,14 +98,12 @@ sampleRegions <- function(weighted)
   numNonSpecific=numRegions-numCTSpecific
   
   focusRegionsWithWeighting=cbind(focusRegions,weighted)
+  colnames(focusRegionsWithWeighting)=c("chrom","chromStart","chromEnd","region","weighting")
   
   ctSpecific=selectModule(moduleDirectory)
   ctSpecific=ctSpecific[,1:3]
-  ctSpecific[,4]=paste(as.character(ctSpecific[,1]),":",ctSpecific[,2],"-",ctSpecific[,3],sep='')
-  ctSpecific$Weighting=0
-  rownames(focusRegionsWithWeighting)=focusRegionsWithWeighting[,4]
-  intersection=which(ctSpecific[,4] %in% focusRegionsWithWeighting[,4]) 
-  ctSpecific[intersection,5]=focusRegionsWithWeighting[ctSpecific[intersection,4],5]
+  colnames(ctSpecific)[1:3]=c("chrom","chromStart","chromEnd")
+  ctSpecific$region=paste(as.character(ctSpecific$chrom),":",ctSpecific$chromStart,"-",ctSpecific$chromEnd,sep='')
   
   if (nrow(ctSpecific) < numCTSpecific)
   {
@@ -113,19 +117,18 @@ sampleRegions <- function(weighted)
   specificSample=ctSpecific[sample(1:nrow(ctSpecific),numCTSpecific),]
   
   rest=focusRegionsWithWeighting
-  intersections= which(focusRegionsWithWeighting[,4] %in% ctSpecific[,4])
+  intersections= which(focusRegionsWithWeighting$region %in% ctSpecific$region)
   rest=rest[-intersections,]
   
   if(sum(as.numeric(rest$weighted))==0)
   {
     print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
-    return(specificSample[,1:4])
+    return(specificSample[,c("chrom","chromStart","chromEnd","region")])
   }
   
-  nonSpecificSample=rest[sample(1:nrow(rest),size=numNonSpecific,prob=rest[,ncol(rest)]),]
-  colnames(nonSpecificSample)=colnames(specificSample)
-  sampledRegions=rbind(specificSample[,1:4],nonSpecificSample[,1:4])
+  sampledRegions=rbind(specificSample[,c("chrom","chromStart","chromEnd","region")]],nonSpecificSample[,c("chrom","chromStart","chromEnd","region")]])
   rownames(sampledRegions)=c(1:nrow(sampledRegions))
+  colnames(sampledRegions)=c("chrom","chromStart","chromEnd","region")
   return (sampledRegions)
 }
 
