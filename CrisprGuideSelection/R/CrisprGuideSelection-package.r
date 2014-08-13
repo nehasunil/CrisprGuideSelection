@@ -126,6 +126,7 @@ sampleRegions <- function(weighted)
     return(specificSample[,c("chrom","chromStart","chromEnd","region")])
   }
   
+  nonSpecificSample=rest[sample(1:nrow(rest),size=numNonSpecific,prob=rest[,ncol(rest)]),]
   sampledRegions=rbind(specificSample[,c("chrom","chromStart","chromEnd","region")],nonSpecificSample[,c("chrom","chromStart","chromEnd","region")])
   rownames(sampledRegions)=c(1:nrow(sampledRegions))
   colnames(sampledRegions)=c("chrom","chromStart","chromEnd","region")
