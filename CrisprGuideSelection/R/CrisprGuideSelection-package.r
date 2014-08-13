@@ -137,26 +137,68 @@ sampleRegions <- function(weighted)
 
 #findPossibleGuides(int guideLength, dataframe sampledRegions)
 #returns all sequences with length guideLength from sampledRegions that start with CC or end with GG
-findPossibleGuides <- function(guideLength, sampledRegions)
+findPossibleGuides <- function(sampledRegions,outputDir)
 {
   require(BSgenome.Hsapiens.UCSC.hg19)
   genome <- BSgenome.Hsapiens.UCSC.hg19
   
-  guides=c("chr","start","end","region")
-  for(i in 1:nrow(sampledRegions))
+  guides=c("chrom","chromStart","chromEnd","region")
+  guidesNeg=c("chrom","chromStart","chromEnd","region")
+  for (i in 1:nrow(sampledRegions))
   {
-    reg=subseq(genome[[as.character(sampledRegions[i,1])]],sampledRegions[i,2],sampledRegions[i,3])
-    match <- matchPattern("GG", reg, max.mismatch=0)
-    for(k in 1:length(match))
+    for (guideLength in 20:23)
     {
-      if(start(match)[k]>(guideLength-1))
+      reg=subseq(genome[[as.character(sampledRegions[i,1])]],sampledRegions[i,2]-1,sampledRegions[i,3])
+      #positive strand
+      guideSeq=paste('G',paste(rep('N',times=guideLength-3),sep='',collapse=''),'GG',collapse='',sep='')
+      guidesSeq=unique(as.character(matchPattern(guideSeq,reg,fixed=F)))
+      
+      match=matchPattern(guideSeq,reg,fixed=F)
+      
+      for(k in 1:length(match))
       {
-        start = end(match)[k] + sampledRegions[i,2]-(guideLength-1)
-        end = end(match)[k] + sampledRegions[i,2]
+        start = start(match)[k] + sampledRegions[i,2]
+        end = end(match)[k] + sampledRegions[i,2] + 1
         guides=rbind(guides,c(as.character(sampledRegions[i,1]),start,end,as.character(sampledRegions[i,4])))
+      }
+      
+      #negative strand
+      guideSeqNeg=paste('CC',paste(rep('N',times=guideLength-3),sep='',collapse=''),'C',collapse='',sep='')
+      guidesSeqNeg=unique(as.character(matchPattern(guideSeqNeg,reg,fixed=F)))
+      guidesSeqNegRC=as.character(reverseComplement(DNAString(guidesSeqNeg[1])))
+      for(j in 1:length(guidesSeqNeg))
+      {
+        guidesSeqNegRC=c(guidesSeqNegRC,as.character(reverseComplement(DNAString(guidesSeqNeg[j]))))
+      }
+      
+      matchNeg=matchPattern(guideSeqNeg,reg,fixed=F)
+      
+      for(k in 1:length(matchNeg))
+      {
+        start = start(matchNeg)[k] + sampledRegions[i,2]
+        end = end(matchNeg)[k] + sampledRegions[i,2] + 1
+        guidesNeg=rbind(guidesNeg,c(as.character(sampledRegions[i,1]),start,end,as.character(sampledRegions[i,4])))
       }
     }
   }
+  
+  write.table(guidesSeq,paste(outputDir,"guideSeqPos.txt",sep=''),sep='\t')
+  print("Guide sequences on positive strand saved to:")
+  print(paste(outputDir,"guideSeqPos.txt",sep=''))
+  write.table(guidesSeqNegRC,paste(outputDir,"guideSeqNeg.txt",sep=''),sep='\t')
+  print("Guide sequences on negative strand saved to:")
+  print(paste(outputDir,"guideSeqNeg.txt",sep=''))
+  
   guides=guides[2:nrow(guides),]
-  return(guides)
+  colnames(guides)=c("chrom","chromStart","chromEnd","sampledRegion")
+  rownames(guides)=c(1:nrow(guides))
+  write.table(guides,paste(outputDir,"guidePos.bed",sep=''),sep='\t')
+  print("Guide BED file for positive strand saved to:")
+  print(paste(outputDir,"guidePos.bed",sep=''))
+  guidesNeg=guidesNeg[2:nrow(guidesNeg),]
+  colnames(guidesNeg)=c("chrom","chromStart","chromEnd","sampledRegion")
+  rownames(guidesNeg)=c(1:nrow(guidesNeg))
+  write.table(guidesNeg,paste(outputDir,"guideNeg.bed",sep=''),sep='\t')
+  print("Guide BED file for negative strand saved to:")
+  print(paste(outputDir,"guideNeg.bed",sep=''))
 }
