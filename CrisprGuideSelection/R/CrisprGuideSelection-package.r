@@ -57,7 +57,7 @@ selectModule <- function(modDir)
 calcModuleWeightingForSampling <- function(go,go_table)
 {
   #order go in ascending order according to weights
-  colnames(go)=c(geneOntology,weight)
+  colnames(go)=c("geneOntology","weight")
   go=as.data.frame(go[order(go$weight),])
   if(nrow(go)>0)
   {
@@ -120,7 +120,7 @@ sampleRegions <- function(weighted)
   intersections= which(focusRegionsWithWeighting$region %in% ctSpecific$region)
   rest=rest[-intersections,]
   
-  if(sum(as.numeric(rest$weighted))==0)
+  if(sum(as.numeric(rest$weighting))==0)
   {
     print("There are no regions of the gene ontology of interest outside of the cell-type specific sample")
     return(specificSample[,c("chrom","chromStart","chromEnd","region")])
