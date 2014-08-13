@@ -64,7 +64,7 @@ calcModuleWeightingForSampling <- function(go,go_table)
     weighting = rep(0,times=nrow(focusRegions))
     for(i in 1:nrow(go))
     {
-      modules=go_table[which(as.character(go$weight)==go[i,"geneOntology"]),1]
+      modules=go_table[which(as.character(go_table[,2])==go[i,"geneOntology"]),1]
       for(k in 1:length(modules))
       {
         clust=read.table(paste(moduleDirectory,"cluster_",modules[k],".bed.gz",sep=''))
